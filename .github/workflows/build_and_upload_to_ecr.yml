@@ -23,7 +23,7 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }} # Referencia a la zona
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}   # Referencia al secreto
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # Referencia al secreto
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Si es necesario (solo para credenciales temporales)
+          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Si es necesario (solo para credenciales temporales)
       
       - name: Loguearse en Amazon ECR
         id: login-ecr
@@ -55,7 +55,7 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }} # Referencia a la zona
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}   # Referencia al secreto
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # Referencia al secreto
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Si es necesario (solo para credenciales temporales)
+          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Si es necesario (solo para credenciales temporales)
       
       - name: Loguearse en Amazon ECR
         id: login-ecr
