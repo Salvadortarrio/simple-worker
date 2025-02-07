@@ -39,7 +39,7 @@ jobs:
 
           docker tag worker-go:latest $ECR_REPO:worker-go
 
-          docker push worker-go:latest $ECR_REPO:worker-go
+          docker push $ECR_REPO:worker-go
 
   build_server:
     runs-on: ubuntu-latest
@@ -71,6 +71,6 @@ jobs:
 
             docker tag server-go:latest $ECR_REPO:server-go
 
-            docker push server-go:latest $ECR_REPO:server-go
+            docker push $ECR_REPO:server-go
 
 
