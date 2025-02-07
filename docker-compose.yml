@@ -1,0 +1,27 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - SERVER_URL=http://server:8080
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge

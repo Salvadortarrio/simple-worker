@@ -1,0 +1,26 @@
+FROM golang:1.21-alpine AS builder
+
+# Establece el directorio de trabajo en el contenedor
+WORKDIR /app
+
+# Copia el archivo go.mod y go.sum para aprovechar el cache de Docker
+COPY aplicacion/go.mod aplicacion/go.sum ./
+
+# Descarga las dependencias de Go
+RUN go mod tidy
+
+# Copia el código fuente a la imagen
+COPY aplicacion/main.go .
+
+RUN go build -o app .
+
+FROM alpine:3.20
+
+WORKDIR /app
+# Compila la aplicación Go
+COPY --from=builder /app ./
+
+EXPOSE 8080
+
+ENTRYPOINT ["./app","worker"]
+
