@@ -42,7 +42,7 @@ jobs:
       # 6. Compilar el ejecutable para la plataforma y arquitectura seleccionadas
       - name: Build application
         run: |
-          GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go build -o app-${{ matrix.os }}-${{ matrix.arch }} 
+          GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go build -o app-${{ matrix.os }}-${{ matrix.arch }} .
 
       # 7. Crear un archivo comprimido con el ejecutable
       - name: Create release assets (tar.gz)
