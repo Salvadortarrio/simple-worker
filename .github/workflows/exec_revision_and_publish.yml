@@ -56,7 +56,7 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ github.token }}
-          branch: main
+          branch: main 
 
         
       # 8. Crear el release en GitHub
