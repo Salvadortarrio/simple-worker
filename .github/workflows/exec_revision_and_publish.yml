@@ -50,6 +50,12 @@ jobs:
           mkdir release
           mv app-${{ matrix.os }}-${{ matrix.arch }} release/
           tar -czf release/app-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C release app-${{ matrix.os }}-${{ matrix.arch }}
+      # 8. Subir los archivos como artefactos para que estén disponibles en el siguiente job
+      - name: Upload release assets as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-assets
+          path: ./release/*
 
 
   create_release:
@@ -79,14 +85,19 @@ jobs:
           draft: false  # No es un borrador, se publica inmediatamente
           prerelease: false  # No es una versión de prerelease
         
+      # 3. Descargar los artefactos subidos en el job anterior
+      - name: Download release assets
+        uses: actions/download-artifact@v3
+        with:
+          name: release-assets
+          path: ./release/
 
-
-      # 3. Subir los archivos generados a la release usando softprops/action-gh-release
+      # 4. Subir los archivos generados a la release usando softprops/action-gh-release
       - name: Upload Release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            .*
+            .release/*
           tag_name: ${{ steps.semver.outputs.next }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
