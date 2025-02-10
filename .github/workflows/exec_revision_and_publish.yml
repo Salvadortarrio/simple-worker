@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [linux, windows]  # Diferentes SO
+        os: [linux, windows,darwin]  # Diferentes SO
         arch: [amd64, arm64]  # Diferentes arquitecturas
       fail-fast: false  # Para que se sigan ejecutando las otras configuraciones aunque una falle
 
@@ -37,7 +37,7 @@ jobs:
 
       # 5. Descargar las dependencias de Go
       - name: Install Go dependencies
-        run: go mod tidy
+        run: GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go mod tidy
 
       # 6. Compilar el ejecutable para la plataforma y arquitectura seleccionadas
       - name: Build application
