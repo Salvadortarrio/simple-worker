@@ -37,12 +37,12 @@ jobs:
 
       # 5. Descargar las dependencias de Go
       - name: Install Go dependencies
-        run: GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go mod tidy
+        run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go mod tidy
 
       # 6. Compilar el ejecutable para la plataforma y arquitectura seleccionadas
       - name: Build application
         run: |
-          GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go build -o app-${{ matrix.os }}-${{ matrix.arch }} .
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o app-${{ matrix.os }}-${{ matrix.arch }} .
 
       # 7. Crear un archivo comprimido con el ejecutable
       - name: Create release assets (tar.gz)
