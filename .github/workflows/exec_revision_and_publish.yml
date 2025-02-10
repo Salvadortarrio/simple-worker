@@ -89,7 +89,7 @@ jobs:
       - name: Download release assets
         uses: actions/download-artifact@v4
         with:
-          name: release-assets-*
+          pattern: release-assets-*
           path: ./release/
 
       # 4. Subir los archivos generados a la release usando softprops/action-gh-release
