@@ -79,26 +79,14 @@ jobs:
           draft: false  # No es un borrador, se publica inmediatamente
           prerelease: false  # No es una versión de prerelease
         
-              # 4. Subir los archivos generados a la release
-      - name: Upload Release assets
-        run: |
-            # Verifica si hay archivos en el directorio
-            echo "Archivos disponibles para subir:"
-            ls ./release/
 
-            # Subir los archivos
-            for file in ./release/*; do
-            if [ -f "$file" ]; then
-                echo "Subiendo el archivo $file..."
-                curl -X POST \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Content-Type: application/octet-stream" \
-                --data-binary @"$file" \
-                "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
-            else
-                echo "No hay archivos para subir."
-            fi
-            done
+
+      # 4. Subir los archivos generados a la release usando softprof/actions
+      - name: Upload Release assets
+        uses: softprof/actions/upload-release-assets@v1
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+          assets_path: ./release  # Ruta donde se encuentran los archivos a subir
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
