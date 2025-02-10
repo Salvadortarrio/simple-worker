@@ -50,6 +50,14 @@ jobs:
           mkdir release
           mv app-${{ matrix.os }}-${{ matrix.arch }} release/
           tar -czf release/app-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C release app-${{ matrix.os }}-${{ matrix.arch }}
+        #7.5
+      - name: Get Next Version
+        id: semver
+        uses: ietf-tools/semver-action@v1
+        with:
+          token: ${{ github.token }}
+          branch: main
+
         
       # 8. Crear el release en GitHub
       - name: Create GitHub Release
@@ -58,8 +66,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}  # Usar la versión generada
-          release_name: Release ${{ env.VERSION }}  # Nombre del release
+          tag_name: ${{ steps.semver.outputs.next }}# Usar la versión generada
+          release_name: Release ${{ steps.semver.outputs.next }} # Nombre del release
           body: |
             Cambios en esta Release:
             - *
@@ -67,16 +75,3 @@ jobs:
           draft: false  # No es un borrador, se publica inmediatamente
           prerelease: false  # No es una versión de prerelease
 
-      # 9. Subir los archivos al release
-      - name: Upload Release assets
-        run: |
-          # Subir los archivos generados al release
-          for file in ./release/*; do
-            echo "Subiendo el archivo $file..."
-            curl -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @"$file" \
-              "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
