@@ -52,9 +52,9 @@ jobs:
           tar -czf release/app-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C release app-${{ matrix.os }}-${{ matrix.arch }}
       # 8. Subir los archivos como artefactos para que estén disponibles en el siguiente job
       - name: Upload release assets as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: release-assets
+          name: release-assets-${{ matrix.os }}-${{ matrix.arch }}
           path: ./release/*
 
 
@@ -87,9 +87,9 @@ jobs:
         
       # 3. Descargar los artefactos subidos en el job anterior
       - name: Download release assets
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: release-assets
+          name: release-assets-*
           path: ./release/
 
       # 4. Subir los archivos generados a la release usando softprops/action-gh-release
