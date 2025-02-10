@@ -91,6 +91,10 @@ jobs:
         with:
           pattern: release-assets-*
           path: ./release/*
+      
+      - name: List files in release directory
+        run: ls -la ./release/
+        
 
       # 4. Subir los archivos generados a la release usando softprops/action-gh-release
       - name: Upload Release assets
