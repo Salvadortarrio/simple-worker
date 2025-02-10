@@ -50,7 +50,7 @@ jobs:
           mkdir release
           mv app-${{ matrix.os }}-${{ matrix.arch }} release/
           tar -czf release/app-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C release app-${{ matrix.os }}-${{ matrix.arch }}
-          
+
 
   create_release:
     needs: build_worker  # Este job depende de que el anterior se haya completado
@@ -83,12 +83,13 @@ jobs:
       - name: Upload Release assets
         run: |
           for file in ./release/*; do
-          echo "Subiendo el archivo $file..."
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Content-Type: application/octet-stream" \
-          --data-binary @"$file" \
-          "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
+            echo "Subiendo el archivo $file..."
+            curl -X POST \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Content-Type: application/octet-stream" \
+                --data-binary @"$file" \
+                "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
