@@ -86,7 +86,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ./release/*
+            *
           tag_name: ${{ steps.semver.outputs.next }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
