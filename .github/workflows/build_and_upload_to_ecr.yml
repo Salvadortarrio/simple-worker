@@ -1,13 +1,6 @@
 name: Build and Push Docker Image to ECR
 on:
-    push:
-      branches:
-        - main
-        - develop
-      paths:
-        - '**'
-        - 'Dockerfile.server'
-        - 'Dockerfile.worker' 
+    workflow_dispatch: 
 jobs:
   build_worker:
     runs-on: ubuntu-latest
