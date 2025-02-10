@@ -82,14 +82,23 @@ jobs:
               # 4. Subir los archivos generados a la release
       - name: Upload Release assets
         run: |
-          for file in ./release/*; do
-            echo "Subiendo el archivo $file..."
-            curl -X POST \
+            # Verifica si hay archivos en el directorio
+            echo "Archivos disponibles para subir:"
+            ls ./release/
+
+            # Subir los archivos
+            for file in ./release/*; do
+            if [ -f "$file" ]; then
+                echo "Subiendo el archivo $file..."
+                curl -X POST \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Content-Type: application/octet-stream" \
                 --data-binary @"$file" \
                 "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
-          done
+            else
+                echo "No hay archivos para subir."
+            fi
+            done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
