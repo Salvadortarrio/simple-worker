@@ -90,14 +90,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: release-assets-*
-          path: ./release/
 
       # 4. Subir los archivos generados a la release usando softprops/action-gh-release
       - name: Upload Release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            .release/*
+            *
           tag_name: ${{ steps.semver.outputs.next }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
