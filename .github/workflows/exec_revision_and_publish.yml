@@ -1,0 +1,87 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**'  # Solo se ejecuta si hay cambios en la carpeta 'aplicacion'
+
+jobs:
+  build_worker:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, windows-latest, macos-latest]  # Diferentes SO
+        arch: [amd64, arm64]  # Diferentes arquitecturas
+      fail-fast: false  # Para que se sigan ejecutando las otras configuraciones aunque una falle
+
+    steps:
+      # 1. Clonamos el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configuramos Go
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '^1.21'  # O la versión que desees usar
+          
+      # 3. Verificamos la versión de Go
+      - name: Check Go version
+        run: go version
+
+      # 4. Configurar el entorno de compilación para cada plataforma
+      - name: Set up environment variables for GOOS and GOARCH
+        run: |
+          echo "Building for GOOS=$RUNNER_OS GOARCH=${{ matrix.arch }}"
+          echo "GOOS=$RUNNER_OS" >> $GITHUB_ENV
+          echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+
+      # 5. Descargar las dependencias de Go
+      - name: Install Go dependencies
+        run: go mod tidy
+
+      # 6. Compilar el ejecutable para la plataforma y arquitectura seleccionadas
+      - name: Build application
+        run: |
+          GOOS=${{ env.GOOS }} GOARCH=${{ env.GOARCH }} go build -o app-${{ matrix.os }}-${{ matrix.arch }} ./aplicacion/main.go
+
+      # 7. Crear un archivo comprimido con el ejecutable
+      - name: Create release assets (tar.gz)
+        run: |
+          mkdir release
+          mv app-${{ matrix.os }}-${{ matrix.arch }} release/
+          tar -czf release/app-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C release app-${{ matrix.os }}-${{ matrix.arch }}
+        
+      # 8. Crear el release en GitHub
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}  # Usar la versión generada
+          release_name: Release ${{ env.VERSION }}  # Nombre del release
+          body: |
+            Cambios en esta Release:
+            - *
+            - *
+          draft: false  # No es un borrador, se publica inmediatamente
+          prerelease: false  # No es una versión de prerelease
+
+      # 9. Subir los archivos al release
+      - name: Upload Release assets
+        run: |
+          # Subir los archivos generados al release
+          for file in ./release/*; do
+            echo "Subiendo el archivo $file..."
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file" \
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

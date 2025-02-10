@@ -4,13 +4,13 @@ FROM golang:1.21-alpine AS builder
 WORKDIR /app
 
 # Copia el archivo go.mod y go.sum para aprovechar el cache de Docker
-COPY aplicacion/go.mod aplicacion/go.sum ./
+COPY go.mod go.sum ./
 
 # Descarga las dependencias de Go
 RUN go mod tidy
 
 # Copia el código fuente a la imagen
-COPY aplicacion/main.go .
+COPY main.go .
 
 RUN go build -o app .
 
