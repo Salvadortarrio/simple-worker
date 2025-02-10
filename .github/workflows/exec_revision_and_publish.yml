@@ -84,10 +84,9 @@ jobs:
       # 3. Subir los archivos generados a la release usando softprops/action-gh-release
       - name: Upload Release assets
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./release/*
+            release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
