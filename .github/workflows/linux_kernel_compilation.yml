@@ -29,13 +29,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the kernel source code
-      uses: actions/checkout@v4
-      with:
-        repository: "torvalds/linux"
-        ref: "master"
-        fetch-tags: "v6.13"
-
     - name: Deploy kernel build pod to EKS
       run: |
         kubectl apply -f kernel-build-pod.yml  # Desplegar un pod con la imagen para compilar el kernel
