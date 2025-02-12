@@ -1,0 +1,26 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libncurses-dev \
+    bison \
+    flex \
+    libssl-dev \
+    libelf-dev \
+    ccache \
+    distcc \
+    git \
+    wget
+
+# Hacer que distcc se use para las compilaciones
+ENV DISTCC_HOSTS="distcc-server:3632"
+
+# Opcional: Hacer que distcc utilice ccache
+ENV DISTCC_CCACHE_SIZE=4G
+
+# Copiar el código fuente del kernel
+COPY . /kernel-src
+WORKDIR /kernel-src
+
+# Configurar y compilar el kernel
+CMD make -j$(nproc) CC="distcc gcc" CXX="distcc g++" 

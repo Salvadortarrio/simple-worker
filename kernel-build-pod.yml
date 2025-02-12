@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: distcc-server
+spec:
+  selector:
+    matchLabels:
+      app: distcc
+  template:
+    metadata:
+      labels:
+        app: distcc
+    spec:
+      containers:
+      - name: distcc
+        image: bensuperpc/distcc:debian-11  # Imagen de Distcc
+        ports:
+        - containerPort: 3632  # Puerto para Distcc
+        env:
+        - name: DISTCC_HOSTS
+          value: "distcc-server:3632"  # Conectar todos los nodos a este servidor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: distcc-server
+spec:
+  ports:
+  - port: 3632
+  selector:
+    app: distcc

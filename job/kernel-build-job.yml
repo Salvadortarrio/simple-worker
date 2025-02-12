@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kernel-build
+spec:
+  template:
+    spec:
+      containers:
+      - name: kernel-build
+        image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image
+        command: ["make", "-j$(nproc)", "CC=distcc gcc", "CXX=distcc g++"]
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secrets
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secrets
+              key: aws_secret_access_key
+        - name: AWS_SESSION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: aws-secrets
+              key: aws_session_token
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: aws-secrets
+              key: aws_region
+        command:
+        - /bin/sh
+        - -c
+        - |
+          make -j$(nproc) CC=distcc gcc CXX=distcc g++
+          aws s3 cp /path/to/kernel.tar.gz s3://your-bucket-name/kernel.tar.gz
+      restartPolicy: Never
+  backoffLimit: 4
