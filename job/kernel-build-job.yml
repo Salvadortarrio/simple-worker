@@ -34,9 +34,13 @@ spec:
               key: aws_region
         command:
         - /bin/sh
-        - -c
+        - c
         - |
           make -j$(nproc) CC=distcc gcc CXX=distcc g++
-          aws s3 cp /path/to/kernel.tar.gz s3://your-bucket-name/kernel.tar.gz
+          # Empaquetar el kernel (si es necesario)
+          tar -czvf /kernel-src/kernel.tar.gz /path/to/kernel-binaries
+          # Subir a S3
+          aws s3 cp /kernel-src/kernel.tar.gz s3://proyect-2-stb-devops-bucket/kernel.tar.gz
+      restartPolicy: Never
       restartPolicy: Never
   backoffLimit: 4
