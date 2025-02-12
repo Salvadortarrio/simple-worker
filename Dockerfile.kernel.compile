@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 
+# Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     build-essential \
     libncurses-dev \
@@ -18,9 +19,11 @@ ENV DISTCC_HOSTS="distcc-server:3632"
 # Opcional: Hacer que distcc utilice ccache
 ENV DISTCC_CCACHE_SIZE=4G
 
-# Copiar el código fuente del kernel
-COPY . /kernel-src
+# Clonar el código fuente del kernel desde GitHub y usar la tag v6.13
+RUN git clone --branch v6.13 --single-branch https://github.com/torvalds/linux.git /kernel-src
+
+# Establecer el directorio de trabajo en el código fuente del kernel
 WORKDIR /kernel-src
 
 # Configurar y compilar el kernel
-CMD make -j$(nproc) CC="distcc gcc" CXX="distcc g++" 
+CMD make -j$(nproc) CC="distcc gcc" CXX="distcc g++"
