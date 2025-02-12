@@ -34,15 +34,3 @@ jobs:
       run: |
             kubectl apply -f job/kernel-build-job.yml
         
-
-    - name: Wait for the build to finish
-      run: |
-        # Buscamos el nombre del Job utilizando su etiqueta
-        job_name=$(kubectl get jobs -l job-name=kernel-build --no-headers -o custom-columns=":metadata.name" | head -n 1)
-        if [ -n "$job_name" ]; then
-        kubectl wait --for=condition=complete job/$job_name --timeout=600s
-        else
-        echo "Job kernel-build not found."
-        exit 1
-        fi
-
