@@ -24,11 +24,6 @@ jobs:
       run: |
         aws eks update-kubeconfig --region ${{ secrets.AWS_DEFAULT_REGION }} --name mi-cluster-Grupo2
 
-  build_kernel:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
     - name: Deploy kernel build pod to EKS
       run: |
         kubectl apply -f kernel-build-pod.yml  # Desplegar un pod con la imagen para compilar el kernel
