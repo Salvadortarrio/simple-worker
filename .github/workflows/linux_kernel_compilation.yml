@@ -17,12 +17,12 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
 
     - name: Configure kubectl
       run: |
-        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name mi-cluster-Grupo2
+        aws eks update-kubeconfig --region ${{ secrets.AWS_DEFAULT_REGION }} --name mi-cluster-Grupo2
 
   build_kernel:
     needs: setup
