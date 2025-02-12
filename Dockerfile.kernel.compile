@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     wget \
     curl \
-    unzip
+    zip
 
 # Instalar AWS CLI (versión 2)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
