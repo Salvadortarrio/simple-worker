@@ -1,4 +1,4 @@
-name: Build and Push Kernel Image to ECR
+name: WORKER= Build and Push Kernel Image to ECR
 
 on:
   workflow_dispatch: 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rol: [job, worker]  # Los valores posibles para el "job"
+        rol: [worker]  # Los valores posibles para el "job"
 
     env:
       ECR_REPO: "248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo"

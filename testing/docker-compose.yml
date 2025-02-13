@@ -1,0 +1,16 @@
+services:
+  distcc-worker:
+    image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image-worker
+    container_name: distcc-worker
+    environment:
+      - DISTCC_HOSTS=distcc-server:3632
+      - DISTCC_CCACHE_SIZE=4G
+    ports:
+      - "3632:3632"  # Exponer el puerto del servicio Distcc
+    networks:
+      - distcc-network
+    restart: unless-stopped
+
+networks:
+  distcc-network:
+    driver: bridge
