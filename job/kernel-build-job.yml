@@ -9,8 +9,7 @@ spec:
     spec:
       containers:
       - name: kernel-build
-        image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image
-        command: ["make", "-j$(nproc)", "CC=distcc gcc", "CXX=distcc g++"]
+        image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image-job
         env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:

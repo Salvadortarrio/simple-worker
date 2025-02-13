@@ -1,4 +1,4 @@
-name: Kernel Build & Release
+name: EKS kubectl apply to kernel jobs
 
 on:
   workflow_dispatch:

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: distcc
-        image: bensuperpc/distcc:debian-11  # Imagen de Distcc
+        image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image-worker  # Imagen de Distcc
         ports:
         - containerPort: 3632  # Puerto para Distcc
         env:

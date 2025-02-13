@@ -1,4 +1,4 @@
-name: Compile and release
+name: Compile and release multiplatform
 
 on:
   workflow_dispatch:
