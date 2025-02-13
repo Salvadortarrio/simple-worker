@@ -1,0 +1,3 @@
+FROM bensuperpc/distcc:ubuntu:22.04
+
+CMD ['sleep','0']
