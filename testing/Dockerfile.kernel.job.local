@@ -1,0 +1,41 @@
+FROM ubuntu:24.04
+
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libncurses-dev \
+    bison \
+    flex \
+    libssl-dev \
+    libelf-dev \
+    ccache \
+    distcc \
+    git \
+    wget \
+    curl \
+    zip
+
+# Instalar AWS CLI (versión 2)
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.24.2.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip
+
+# Hacer que distcc se use para las compilaciones
+ENV DISTCC_HOSTS="distcc-server:3632"
+
+# Opcional: Hacer que distcc utilice ccache
+ENV DISTCC_CCACHE_SIZE=4G
+
+# Copiar el código fuente del kernel desde la máquina local al contenedor
+# Asegúrate de que la ruta local sea correcta.
+COPY ./kernel-src /kernel-src
+
+# Establecer el directorio de trabajo en el código fuente del kernel
+WORKDIR /kernel-src
+
+# Configuración inicial (opcional) del kernel
+RUN make defconfig
+
+CMD ["tail", "-f", "/dev/null"]
+

@@ -1,15 +1,31 @@
 services:
-  distcc-worker:
+  distcc-server:
     image: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo:kernel-image-worker
-    container_name: distcc-worker
+    container_name: distcc-server
     environment:
       - DISTCC_HOSTS=distcc-server:3632
       - DISTCC_CCACHE_SIZE=4G
     ports:
       - "3632:3632"  # Exponer el puerto del servicio Distcc
+      - "3633:3633"  # Exponer el puerto de estadísticas de distcc
     networks:
       - distcc-network
     restart: unless-stopped
+  
+  kernel-build:
+    build:
+      context: .
+      dockerfile: Dockerfile.kernel.job.local  # Ruta al Dockerfile que quieres usar
+    container_name: kernel-build
+    environment:
+      - DISTCC_HOSTS=distcc-server:3632
+      - DISTCC_CCACHE_SIZE=4G
+    volumes:
+      - ./kernel-src:/kernel-src  # Mapea la carpeta local del código fuente al contenedor
+    networks:
+      - distcc-network
+    restart: unless-stopped
+  
 
 networks:
   distcc-network:

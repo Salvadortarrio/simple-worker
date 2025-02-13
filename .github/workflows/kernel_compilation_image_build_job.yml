@@ -36,6 +36,6 @@ jobs:
           IMAGE_NAME="kernel-image-${{ matrix.rol }}"  # Usamos job y worker para formar el nombre
           echo "Building Docker image: $IMAGE_NAME"
           
-          docker build -t $IMAGE_NAME -f Dockerfile.kernel.${{ matrix.rol }} .
+          docker build -t $IMAGE_NAME -f job/Dockerfile.kernel.${{ matrix.rol }} .
           docker tag $IMAGE_NAME:latest $ECR_REPO:$IMAGE_NAME
           docker push $ECR_REPO:$IMAGE_NAME
