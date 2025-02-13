@@ -16,10 +16,12 @@ RUN apt-get update && apt-get install -y \
     zip
 
 # Instalar AWS CLI (versión 2)
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.24.2.zip" -o "awscliv2.zip" 
-RUN unzip awscliv2.zip 
-RUN ./aws/install 
-RUN rm -rf awscliv2.zip
+# Instalar AWS CLI (versión 2)
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.24.2.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip
+
 
 # Hacer que distcc se use para las compilaciones
 ENV DISTCC_HOSTS="distcc-server:3632"
@@ -32,6 +34,8 @@ RUN git clone --branch v6.13 --single-branch https://github.com/torvalds/linux.g
 
 # Establecer el directorio de trabajo en el código fuente del kernel
 WORKDIR /kernel-src
+
+RUN make defconfig
 
 # Configurar y compilar el kernel
 CMD make -j$(nproc) CC="distcc gcc" CXX="distcc g++"
