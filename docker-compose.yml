@@ -13,16 +13,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.worker
-    environment:
-      - SERVER_URL=http://server:8080
     depends_on:
       - server
+    command: -server http://server:8080
     networks:
       - app-network
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 1G  # Limitar la memoria de cada worker a 1 GB
+        reservations:
+          memory: 512M  # Puedes reservar una cantidad menor si es necesario
 
 
 
 networks:
   app-network:
-    driver: bridge
+
   

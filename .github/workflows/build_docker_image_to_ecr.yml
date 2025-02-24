@@ -1,0 +1,37 @@
+name: Build and Push Docker Images to AWS ECR
+
+on:
+  workflow_dispatch:
+env:
+  AWS_REGION: eu-west-2
+  AWS_ECR_URL: 248189943700.dkr.ecr.eu-west-2.amazonaws.com/stb-my-ecr-repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }} 
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_URL
+
+      - name: Build Docker Images
+        run: |
+          docker build -t $AWS_ECR_URL:server-go -f ./Dockerfile.server .
+          docker build -t $AWS_ECR_URL:worker-go -f ./Dockerfile.worker .
+
+      - name: Push Docker Images to ECR
+        run: |
+          docker push $AWS_ECR_URL:server-go
+          docker push $AWS_ECR_URL:worker-go
