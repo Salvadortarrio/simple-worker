@@ -28,7 +28,9 @@ RUN apk add --no-cache \
     py3-pip \
     groff \
     less \
-    unzip
+    unzip \
+    ca-certificates \
+    && update-ca-certificates
 
 # Instalar AWS CLI v2 (según la nueva forma que quieres)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
