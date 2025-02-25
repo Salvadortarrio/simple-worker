@@ -1,0 +1,1 @@
+./app add -server http://18.134.181.148:8080 -cmd "echo fin && sleep 5"

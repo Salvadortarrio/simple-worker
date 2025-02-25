@@ -19,18 +19,8 @@ RUN go build -o app .
 # Fase final con Alpine y curl
 FROM alpine:3.20
 
-# Instala curl, jq, bash, y dependencias para AWS CLI
-RUN apk add --no-cache \
-    curl \
-    jq \
-    bash \
-    python3 \
-    py3-pip \
-    groff \
-    less
-
-# Instala AWS CLI (versión 2)
-RUN pip3 install --no-cache-dir awscli
+# Instala curl y cualquier otra dependencia si es necesario
+RUN apk add --no-cache curl jq
 
 WORKDIR /app
 
@@ -40,4 +30,4 @@ COPY --from=builder /app ./
 EXPOSE 8080
 
 # Establece el punto de entrada para ejecutar la aplicación Go
-ENTRYPOINT ["./app", "worker"]
+ENTRYPOINT ["./app","worker"]
