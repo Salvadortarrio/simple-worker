@@ -31,6 +31,7 @@ RUN apt update && apt install -y \
     less \
     unzip \
     ca-certificates \
+    time \
     && update-ca-certificates
 
 
