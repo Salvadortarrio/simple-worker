@@ -20,7 +20,7 @@ RUN go build -o app .
 FROM ubuntu:24.04
 
 # Instala curl, jq, bash, y dependencias para AWS CLI
-RUN apk add --no-cache \
+RUN apt add --no-cache \
     curl \
     jq \
     bash \
