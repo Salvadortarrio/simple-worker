@@ -27,16 +27,22 @@ RUN apk add --no-cache \
     python3 \
     py3-pip \
     groff \
-    less
+    less \
+    unzip
 
-# Instala AWS CLI (versión 2)
-RUN pip3 install --no-cache-dir awscli
+# Instalar AWS CLI v2 (según la nueva forma que quieres)
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    sudo ./aws/install && \
+    rm -rf awscliv2.zip aws
 
+# Establece el directorio de trabajo en /app
 WORKDIR /app
 
 # Copia la aplicación compilada desde el contenedor de construcción
 COPY --from=builder /app ./
 
+# Exponer el puerto que usará la aplicación
 EXPOSE 8080
 
 # Establece el punto de entrada para ejecutar la aplicación Go
