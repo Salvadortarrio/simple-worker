@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source .env
 # URL de S3 del archivo comprimido de forma manual
 bucket_url="s3://commoncrawl/crawl-data/CC-MAIN-2025-05/wat.paths.gz"
 
@@ -15,14 +15,12 @@ echo "Descargando y procesando el archivo desde S3: $bucket_url..."
 #  ./job.sh "$linea"
 #done
 
-ES_HOST="job-crawler-dev-es-alb-699132181.eu-west-2.elb.amazonaws.com"
-SW_SERVER="18.132.18.59"
 ES_USERNAME="elastic"
 ES_PASSWORD="campusdual"
 INDEX_NAME="url"
 
 echo "Verificando si el índice existe..."
-curl -X PUT "$ES_HOST:9200/$INDEX_NAME" \
+curl -X PUT "$AWS_ELASTICSEARCH_ALB_DNS:9200/$INDEX_NAME" \
     -u "$ES_USERNAME:$ES_PASSWORD" \
     -H "Content-Type: application/json" \
     -d '{
@@ -44,8 +42,8 @@ curl -X PUT "$ES_HOST:9200/$INDEX_NAME" \
 
 
 # O si prefieres usar `xargs` para paralelizar
-#aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 16 ./app add -server http://${SW_SERVER}:8080 -cmd "time ./scripts/job {} >> time.txt && aws s3 sync time.txt s3://proyecto-devops-grupo-dos/$(hostname -I | awk '{print $1}') " -timeout 180
+aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"(time ./scripts/job {})2>&1 | grep real >> time.txt; echo 'URL: {}' >> time.txt; && aws s3 sync time.txt s3://proyecto-devops-grupo-dos/$(hostname -I | awk '{print $1}') \"" -timeout 180
 
-aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd " (time sleep 4 )2>&1 | grep real >> time.txt && aws s3 cp time.txt s3://proyecto-devops-grupo-dos/workers/$(hostname -I | awk '{print $1}')/time.txt " -timeout 10
+#aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"(time sleep 4 )2>&1 | grep real >> time.txt && aws s3 cp time.txt s3://proyecto-devops-grupo-dos/workers/$(hostname -I | awk '{print $1}')/time.txt \"" -timeout 15
 
 echo "Proceso completado."
