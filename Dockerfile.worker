@@ -1,6 +1,19 @@
 # Fase de construcción
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
+
+RUN apk add --no-cache \
+    git \
+    bash \
+    curl \
+    build-base  # build-base incluye herramientas como gcc, libc-dev, etc.
+
+# Establece el directorio de trabajo en el contenedor
+WORKDIR /xq
+
+# Clona el repositorio de xq
+RUN git clone https://github.com/sibprogrammer/xq.git . \
+    && go build -o /usr/local/bin/xq .
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
@@ -35,12 +48,8 @@ RUN apt update && apt install -y \
     git \
     && update-ca-certificates
 
-RUN git clone https://github.com/sibprogrammer/xq.git /xq \
-    && cd /xq \
-    && go build -o /usr/local/bin/xq .
 
 
-RUN ls -l /usr/local/bin/
     
 # Instalar AWS CLI v2 (según la nueva forma que quieres)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
@@ -56,7 +65,7 @@ COPY --from=builder /app ./
 
 # Copia el binario de xq desde el contenedor de construcción (ya compilado)
 
-
+COPY --from=builder usr/local/bin/xq   ./usr/local/bin/xq 
 
 # Exponer el puerto que usará la aplicación
 EXPOSE 8080
