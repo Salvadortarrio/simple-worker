@@ -32,8 +32,12 @@ RUN apt update && apt install -y \
     unzip \
     ca-certificates \
     time \
-    xq \
+    git \
     && update-ca-certificates
+
+RUN git clone https://github.com/sibprogrammer/xq.git /xq \
+    && cd /xq \
+    && go build -o /usr/local/bin/xq .
 
 
 # Instalar AWS CLI v2 (según la nueva forma que quieres)
@@ -47,6 +51,9 @@ WORKDIR /app
 
 # Copia la aplicación compilada desde el contenedor de construcción
 COPY --from=builder /app ./
+
+# Copia el binario de xq desde el contenedor de construcción (ya compilado)
+COPY --from=builder /usr/local/bin/xq /usr/local/bin/xq
 
 # Exponer el puerto que usará la aplicación
 EXPOSE 8080

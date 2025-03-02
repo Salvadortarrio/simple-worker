@@ -25,7 +25,7 @@ curl -X PUT "$AWS_ELASTICSEARCH_ALB_DNS:9200/$INDEX_NAME" \
     -H "Content-Type: application/json" \
     -d '{
           "settings": {
-            "number_of_shards": 12,
+            "number_of_shards": 9,
             "number_of_replicas": 1
           },
           "mappings": {
@@ -42,8 +42,10 @@ curl -X PUT "$AWS_ELASTICSEARCH_ALB_DNS:9200/$INDEX_NAME" \
 
 
 # O si prefieres usar `xargs` para paralelizar
-aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"(time ./scripts/job {})2>&1 | grep real >> time.txt; echo 'URL: {}' >> time.txt; && aws s3 sync time.txt s3://proyecto-devops-grupo-dos/$(hostname -I | awk '{print $1}') \"" -timeout 180
+#aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"(time ./scripts/job.sh {}) 2>&1 | grep real >> time.txt && aws s3 cp time.txt s3://proyecto-devops-grupo-dos/workers/$(hostname -I | awk '{print $1}') \"" -timeout 100
 
-#aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"(time sleep 4 )2>&1 | grep real >> time.txt && aws s3 cp time.txt s3://proyecto-devops-grupo-dos/workers/$(hostname -I | awk '{print $1}')/time.txt \"" -timeout 15
+aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 20 ./app add -server http://${SW_SERVER}:8080 -cmd "bash -c \"./scripts/job.sh {}\"" -timeout 100
+
+#aws s3 cp "$bucket_url" - | gunzip -c | xargs -I {} -P 1 ./app add -server http://${SW_SERVER}:8080 -cmd " (time sleep 4 )2>&1 | grep real >> time.txt && aws s3 cp time.txt s3://proyecto-devops-grupo-dos/workers/$(hostname -I | awk '{print $1}')/time.txt " -timeout 15
 
 echo "Proceso completado."
