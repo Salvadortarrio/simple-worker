@@ -3,17 +3,14 @@ FROM golang:1.23-alpine AS builder
 
 
 RUN apk add --no-cache \
-    git \
-    bash \
-    curl \
-    build-base  # build-base incluye herramientas como gcc, libc-dev, etc.
+    git 
 
-# Establece el directorio de trabajo en el contenedor
-WORKDIR /xq
+
+
 
 # Clona el repositorio de xq
-RUN git clone https://github.com/sibprogrammer/xq.git . \
-    && go build -o /usr/local/bin/xq .
+RUN git clone https://github.com/sibprogrammer/xq.git /tmp/xq \
+    &&cd /tmp/xq &&go build -o /usr/local/bin/xq .
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
@@ -29,8 +26,6 @@ COPY main.go .
 # Compila la aplicación Go
 RUN go build -o app .
 
-# Fase final con Alpine y curl
-# Fase final con Ubuntu y las dependencias necesarias
 FROM ubuntu:24.04
 
 # Actualiza los repositorios e instala curl, jq, bash, dependencias para AWS CLI y certificados
@@ -45,30 +40,28 @@ RUN apt update && apt install -y \
     unzip \
     ca-certificates \
     time \
-    git \
     && update-ca-certificates
 
 
-
-    
 # Instalar AWS CLI v2 (según la nueva forma que quieres)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf awscliv2.zip aws
 
+COPY --from=builder /usr/local/bin/xq   ./usr/local/bin/xq 
 # Establece el directorio de trabajo en /app
 WORKDIR /app
 
 # Copia la aplicación compilada desde el contenedor de construcción
-COPY --from=builder /app ./
+COPY --from=builder /app/app ./
 
-# Copia el binario de xq desde el contenedor de construcción (ya compilado)
-
-COPY --from=builder usr/local/bin/xq   ./usr/local/bin/xq 
+# Asegúrate de que el binario sea ejecutable
+RUN chmod +x /app/app
 
 # Exponer el puerto que usará la aplicación
 EXPOSE 8080
 
 # Establece el punto de entrada para ejecutar la aplicación Go
 ENTRYPOINT ["./app", "worker"]
+
